@@ -1,0 +1,25 @@
+{
+  "title": "Student Score API",
+  "model_file": "Student_Academic_Performance.pkl",
+  "scaler_file": null,
+  "features": [
+    {
+      "name": "Study_Hours",
+      "type": "number"
+    },
+    {
+      "name": "Attendance_Rate",
+      "type": "number"
+    },
+    {
+      "name": "Assignments",
+      "type": "number"
+    }
+  ],
+  "class_labels": null,
+  "example": {
+    "Study_Hours": 4,
+    "Attendance_Rate": 85,
+    "Assignments": 5
+  }
+}
