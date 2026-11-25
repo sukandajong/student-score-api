@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ทำนายคะแนนสอบ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
+      --card-bg: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border-color: #cbd5e1;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --radius: 14px;
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Sarabun', sans-serif;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 520px;
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 36px 32px;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    header h1 {
+      font-size: 1.85rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #334155;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 12px 64px 12px 16px;
+      font-size: 1.05rem;
+      border: 1.5px solid var(--border-color);
+      border-radius: 10px;
+      outline: none;
+      transition: all 0.2s ease;
+      background-color: #f8fafc;
+      color: var(--text-main);
+    }
+
+    input[type="number"]:focus {
+      background-color: #ffffff;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
+    }
+
+    .unit-badge {
+      position: absolute;
+      right: 14px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      pointer-events: none;
+      font-weight: 500;
+    }
+
+    button.btn-submit {
+      width: 100%;
+      padding: 14px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #ffffff;
+      background-color: var(--primary);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-top: 10px;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+    }
+
+    button.btn-submit:hover:not(:disabled) {
+      background-color: var(--primary-hover);
+      box-shadow: 0 6px 16px rgba(79, 70, 229, 0.35);
+    }
+
+    button.btn-submit:disabled {
+      background-color: #94a3b8;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .notice {
+      display: none;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    .alert {
+      display: none;
+      margin-top: 20px;
+      padding: 14px 16px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .alert-error {
+      background-color: #fef2f2;
+      color: var(--danger);
+      border: 1px solid #fecaca;
+    }
+
+    .result-card {
+      display: none;
+      margin-top: 28px;
+      padding: 24px;
+      background-color: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      text-align: center;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-card .subtitle {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .score-display {
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin: 8px 0;
+      line-height: 1.1;
+    }
+
+    .score-display .unit {
+      font-size: 1.25rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-left: 4px;
+    }
+
+    .prediction-label {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background-color: #e0e7ff;
+      color: var(--primary-hover);
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .confidence-badge {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 8px;
+    }
+
+    .prob-container {
+      display: none;
+      margin-top: 20px;
+      text-align: left;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 16px;
+    }
+
+    .prob-container h4 {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    .prob-row {
+      margin-bottom: 10px;
+    }
+
+    .prob-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
+
+    .bar-bg {
+      width: 100%;
+      height: 8px;
+      background-color: #e2e8f0;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background-color: var(--primary);
+      border-radius: 999px;
+      transition: width 0.4s ease;
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 24px 20px;
+      }
+      header h1 {
+        font-size: 1.55rem;
+      }
+      .score-display {
+        font-size: 2.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>ทำนายคะแนนสอบ</h1>
+      <p>ประเมินผลคะแนนสอบด้วยระบบปัญญาประดิษฐ์</p>
+    </header>
+
+    <form id="predictionForm" novalidate>
+      <div class="form-group">
+        <label for="Study_Hours">ชั่วโมงเรียน</label>
+        <div class="input-wrapper">
+          <input type="number" id="Study_Hours" step="any" min="0" value="4" required>
+          <span class="unit-badge">ชั่วโมง</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="Attendance_Rate">อัตราการเข้าเรียน</label>
+        <div class="input-wrapper">
+          <input type="number" id="Attendance_Rate" step="any" min="0" max="100" value="85" required>
+          <span class="unit-badge">%</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="Assignments">จำนวนการส่งงาน</label>
+        <div class="input-wrapper">
+          <input type="number" id="Assignments" step="any" min="0" value="5" required>
+          <span class="unit-badge">ชิ้น</span>
+        </div>
+      </div>
+
+      <button type="submit" id="submitBtn" class="btn-submit">ทำนาย</button>
+      <div id="loadingNotice" class="notice">กำลังเชื่อมต่อกับระบบ การทำงานครั้งแรกอาจใช้เวลาหลายวินาที...</div>
+    </form>
+
+    <div id="errorAlert" class="alert alert-error"></div>
+
+    <div id="resultCard" class="result-card">
+      <div class="subtitle">ผลการทำนายคะแนนสอบ</div>
+      <div class="score-display">
+        <span id="scoreText">0</span>
+        <span class="unit">คะแนน</span>
+      </div>
+      <div id="labelBadge" class="prediction-label" style="display: none;"></div>
+      <div id="confidenceText" class="confidence-badge" style="display: none;"></div>
+
+      <div id="probabilitiesSection" class="prob-container">
+        <h4>ความน่าจะเป็นของแต่ละกลุ่ม</h4>
+        <div id="probBars"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = "https://student-score-api.vercel.app";
+
+    const form = document.getElementById('predictionForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const loadingNotice = document.getElementById('loadingNotice');
+    const errorAlert = document.getElementById('errorAlert');
+    const resultCard = document.getElementById('resultCard');
+    const scoreText = document.getElementById('scoreText');
+    const labelBadge = document.getElementById('labelBadge');
+    const confidenceText = document.getElementById('confidenceText');
+    const probabilitiesSection = document.getElementById('probabilitiesSection');
+    const probBars = document.getElementById('probBars');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearMessages();
+
+      const studyHoursVal = document.getElementById('Study_Hours').value.trim();
+      const attendanceRateVal = document.getElementById('Attendance_Rate').value.trim();
+      const assignmentsVal = document.getElementById('Assignments').value.trim();
+
+      if (!studyHoursVal || !attendanceRateVal || !assignmentsVal) {
+        showError('กรุณากรอกข้อมูลให้ครบถ้วนทุกช่องก่อนกดทำนาย');
+        return;
+      }
+
+      const Study_Hours = Number(studyHoursVal);
+      const Attendance_Rate = Number(attendanceRateVal);
+      const Assignments = Number(assignmentsVal);
+
+      if (isNaN(Study_Hours) || isNaN(Attendance_Rate) || isNaN(Assignments)) {
+        showError('กรุณาระบุข้อมูลเป็นตัวเลขที่ถูกต้อง');
+        return;
+      }
+
+      if (Study_Hours < 0 || Attendance_Rate < 0 || Assignments < 0) {
+        showError('ค่าข้อมูลต้องไม่น้อยกว่า 0');
+        return;
+      }
+
+      const payload = {
+        Study_Hours: Study_Hours,
+        Attendance_Rate: Attendance_Rate,
+        Assignments: Assignments
+      };
+
+      setLoading(true);
+
+      try {
+        const response = await fetch(`${API_URL}/predict`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          throw new Error('Server returned error status');
+        }
+
+        const data = await response.json();
+        renderResult(data);
+      } catch (err) {
+        showError('ไม่สามารถเชื่อมต่อกับระบบทำนายได้ในขณะนี้ กรุณาลองใหม่อีกครั้งในภายหลัง');
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    function setLoading(isLoading) {
+      if (isLoading) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'กำลังทำนาย...';
+        loadingNotice.style.display = 'block';
+      } else {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'ทำนาย';
+        loadingNotice.style.display = 'none';
+      }
+    }
+
+    function clearMessages() {
+      errorAlert.style.display = 'none';
+      errorAlert.textContent = '';
+      resultCard.style.display = 'none';
+    }
+
+    function showError(message) {
+      errorAlert.textContent = message;
+      errorAlert.style.display = 'block';
+    }
+
+    function renderResult(data) {
+      const pred = data.prediction !== undefined ? Number(data.prediction) : null;
+
+      if (pred !== null && !isNaN(pred)) {
+        scoreText.textContent = pred % 1 === 0 ? pred : pred.toFixed(2);
+      } else {
+        scoreText.textContent = '-';
+      }
+
+      if (data.label) {
+        labelBadge.textContent = data.label;
+        labelBadge.style.display = 'inline-block';
+      } else {
+        labelBadge.style.display = 'none';
+      }
+
+      if (data.confidence !== undefined && data.confidence !== null) {
+        const confVal = (Number(data.confidence) * 100).toFixed(1);
+        confidenceText.textContent = `ระดับความเชื่อมั่น: ${confVal}%`;
+        confidenceText.style.display = 'block';
+      } else {
+        confidenceText.style.display = 'none';
+      }
+
+      if (data.probabilities && typeof data.probabilities === 'object' && Object.keys(data.probabilities).length > 0) {
+        probBars.innerHTML = '';
+        for (const [groupName, probVal] of Object.entries(data.probabilities)) {
+          const percentage = (Number(probVal) * 100).toFixed(1);
+          const row = document.createElement('div');
+          row.className = 'prob-row';
+          row.innerHTML = `
+            <div class="prob-header">
+              <span>${groupName}</span>
+              <span>${percentage}%</span>
+            </div>
+            <div class="bar-bg">
+              <div class="bar-fill" style="width: ${percentage}%"></div>
+            </div>
+          `;
+          probBars.appendChild(row);
+        }
+        probabilitiesSection.style.display = 'block';
+      } else {
+        probabilitiesSection.style.display = 'none';
+      }
+
+      resultCard.style.display = 'block';
+    }
+  </script>
+</body>
+</html>
